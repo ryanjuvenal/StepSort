@@ -53,6 +53,9 @@ def index():
     
     else:
         return render_template("index.html")
+@app.route("/health")
+def health():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     app.run(debug=True)
