@@ -52,14 +52,15 @@ python main.py
 ```
 
 ## A aplicação será executada em:
-```bashhttp://127.0.0.1:5000/
+```bash
+http://127.0.0.1:5000/
 ```
 
 ---
 
 ## 🧪 Testar endpoint /health
 
-Para verificar se o serviço está ativo, abra no navegador ou use curl:
+### Para verificar se o serviço está ativo, abra no navegador ou use curl:
 
 ```bash
 http://127.0.0.1:5000/health	
