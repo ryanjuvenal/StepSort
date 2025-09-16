@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div id="originalArr">
+            <h1>Ordenando com {{ method }}:</h1>
+            <h1>{{ originalArr }} -> <span style="color: #28cee3;">{{ sortedArr }}</span></h1>
+        </div>
+
+        <h1>Com {{ steps|length }} etapas:</h1>
+        <div id="steps">
+            {% for step in steps %}
+            <div class="step">
+                <h2 style="color: #f8dc4c;">{{ loop.index }}. Trocar {{ step[1][0] }} com {{ step[1][1] }}</h2>
+                <h2 style="color: #28cee3;">{{ step[0] }}</h2>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

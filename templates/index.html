@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>akdkajsdkajdkajd</title>
+</head>
+<body>
+    <h2>Adicionar números à lista</h2>
+
+    <input type="number" id="numberInput" placeholder="Digite um número">
+    <button type="button" onclick="addNumber()">Adicionar</button>
+
+    <br><br>
+
+    <input type="number" id="randomAmount" placeholder="Quantidade">
+    <button type="button" onclick="generateRandom()">Gerar aleatórios</button>
+
+    <h3>Lista de números:</h3>
+    <p id="numbersList">[]</p>
+
+    <form method="post">
+        <input type="hidden" name="numbers" id="hiddenNumbers">
+        <input type="radio" id="bubbleSort" name="sorting" value="bubbleSort">
+         <label>Bubble Sort</label>
+         <input type="radio" id="selectionSort" name="sorting" value="selectionSort">
+         <label>Selection Sort</label><br>
+        <button type="submit" onclick="sendList()">Ordenar</button>
+    </form>
+
+    <script>
+        let numbers = [];
+
+        function addNumber() {
+            const input = document.getElementById("numberInput");
+            const value = input.value;
+
+            if (value !== "") {
+                numbers.push(Number(value));
+                updateList();
+                input.value = "";
+                input.focus();
+            }
+        }
+
+        function generateRandom() {
+            const qtd = document.getElementById("randomAmount").value;
+
+            if (qtd !== "" && qtd > 0) {
+                for (let i = 0; i < qtd; i++) {
+                    num = Math.floor(Math.random() * 1337);
+                    numbers.push(num);
+                }
+                updateList();
+                document.getElementById("randomAmount").value = "";
+            }
+        }
+
+        function updateList() {
+            document.getElementById("numbersList").textContent = `[${numbers.join(", ")}]`;
+        }
+
+        function sendList() {
+            document.getElementById("hiddenNumbers").value = numbers.join(",");
+        }
+    </script>
+</body>
+</html>
