@@ -79,3 +79,5 @@ http://127.0.0.1:5000/health
 
 - **Ryan Juvenal Santos Oliveira**
 - **Cesar Augusto Salles Marcondes**
+- **doca**
+- **deus gamer**
