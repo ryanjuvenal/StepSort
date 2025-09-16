@@ -23,6 +23,7 @@ O sistema permite que o usuário insira números manualmente ou gere listas alea
 ---
 
 ## 📂 Estrutura Inicial do Projeto
+```bash
 StepSort/
 ├── static/          <- arquivos CSS
 ├── templates/
@@ -30,7 +31,7 @@ StepSort/
 │   └── sorted.html  <- Página com resultado da ordenação
 ├── main.py          <- Código principal Flask
 └── README.md
-
+```
 
 ---
 
