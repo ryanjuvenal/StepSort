@@ -31,6 +31,7 @@ StepSort/
 ├── main.py          <- Código principal Flask
 └── README.md
 
+
 ---
 
 ## 🚀 Como Rodar Localmente
