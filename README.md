@@ -1,39 +1,78 @@
 # 📊 StepSort
 
-**StepSort** é uma aplicação web desenvolvida em **Flask** que tem como objetivo auxiliar no aprendizado de algoritmos de ordenação.  
-O sistema permite que o usuário insira números manualmente ou gere listas aleatórias, e então visualize passo a passo como o algoritmo organiza os dados.
-
-Atualmente estão disponíveis os algoritmos:  
-- 🔵 **Bubble Sort**  
-- 🟢 **Selection Sort**
+**StepSort** é uma aplicação web desenvolvida em **Flask** que demonstra algoritmos de ordenação passo a passo.  
+O sistema permite que o usuário insira números manualmente ou gere listas aleatórias, e visualize como os algoritmos **Bubble Sort** e **Selection Sort** organizam os dados.
 
 ---
 
-## 🎯 Objetivos
+## 🎯 Objetivo
 
 - Fornecer uma ferramenta interativa e educacional para estudantes de programação.  
-- Demonstrar visualmente os passos de execução dos algoritmos de ordenação.  
-- Facilitar a compreensão prática do funcionamento interno dos métodos de ordenação.  
-- Servir como base para expansão com novos algoritmos e recursos visuais.
+- Demonstrar visualmente o funcionamento dos algoritmos de ordenação.  
+- Possibilitar testes simples via endpoint `/health` para verificar se a aplicação está ativa.
 
 ---
 
-## 🛠️ Stack utilizada
+## 🛠️ Stack Utilizada
 
-- **Linguagem:** [Python 3.x](https://www.python.org/)  
-- **Framework Backend:** [Flask](https://flask.palletsprojects.com/)  
-- **Frontend:** HTML5, CSS3 e JavaScript (puro)  
-- **Templates:** [Jinja2](https://jinja.palletsprojects.com/)  
+- **Linguagem:** Python 3.x  
+- **Framework Web:** Flask  
+- **Frontend:** HTML5, CSS3 e JavaScript  
+- **Templates:** Jinja2  
 
 ---
 
-## 🚀 Como rodar localmente
+## 📂 Estrutura Inicial do Projeto
+StepSort/
+│── static/ # arquivos CSS
+│── templates/
+│ ├── index.html # Página inicial
+│ └── sorted.html # Página com resultado da ordenação
+│── main.py # Código principal Flask
+│── README.md
+
+---
+
+## 🚀 Como Rodar Localmente
 
 ### 1. Clonar o repositório
 ```bash
 git clone https://github.com/seu-usuario/StepSort.git
 cd StepSort
 ```
-### 2. Executar aplicação
+
+### 2. Instalar dependências
 ```bash
-python app.py
+pip install flask
+```
+
+### 3. Rodar o serviço Flask
+```bash
+python main.py
+```
+
+## A aplicação será executada em:
+```bashhttp://127.0.0.1:5000/
+```
+
+---
+
+## 🧪 Testar endpoint /health
+
+Para verificar se o serviço está ativo, abra no navegador ou use curl:
+
+```bash
+http://127.0.0.1:5000/health	
+```
+
+### Resposta esperada
+```bash
+{"status": "ok"}
+```
+
+---
+
+## 👥 Integrantes do Grupo
+
+- **Ryan Juvenal Santos Oliveira
+- **Cesar Augusto Salles Marcondes
