@@ -74,5 +74,5 @@ http://127.0.0.1:5000/health
 
 ## 👥 Integrantes do Grupo
 
-- **Ryan Juvenal Santos Oliveira
-- **Cesar Augusto Salles Marcondes
+- **Ryan Juvenal Santos Oliveira**
+- **Cesar Augusto Salles Marcondes**
