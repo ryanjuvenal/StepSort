@@ -1,28 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/25/25612.png">
     <title>StepSort</title>
 </head>
 <body>
     <div class="container">
         <div id="originalArr">
-            <h1>Ordenando com {{ method }}:</h1>
-            <h1>{{ originalArr }} -> <span style="color: #28cee3;">{{ sortedArr }}</span></h1>
+            <h1>Execução de Ordenação</h1>
+            <h2>Usuário: {{ player }}</h2>
+            <h2>Algoritmo: {{ method }}</h2>
+            <h2>Complexidade Teórica: {{ complexity }}</h2>
+            <h2>Comparações: {{ comparisons }} | Trocas: {{ swaps }}</h2>
+            <h2>Lista Original: {{ originalArr }}</h2>
+            <h2>Resultado Final: <span style="color: #28cee3;">{{ sortedArr }}</span></h2>
         </div>
 
-        <h1>Com {{ steps|length }} etapas:</h1>
+        <h1>Processo de Ordenação ({{ steps|length }} etapas):</h1>
         <div id="steps">
             {% for step in steps %}
             <div class="step">
-                <h2 style="color: #f8dc4c;">{{ loop.index }}. Trocar {{ step[1][0] }} com {{ step[1][1] }}</h2>
-                <h2 style="color: #28cee3;">{{ step[0] }}</h2>
+                <h3 style="color: #f8dc4c;">{{ loop.index }}. Trocar {{ step[1][0] }} com {{ step[1][1] }}</h3>
+                <h3 style="color: #28cee3;">{{ step[0] }}</h3>
             </div>
             {% endfor %}
         </div>
+
+        <a href="{{ url_for('index') }}" style="margin-top: 2rem; color: #28cee3;">Nova Ordenação</a> |
+        <a href="{{ url_for('history') }}" style="color: #f8dc4c;">Ver Histórico</a>
     </div>
 </body>
 </html>

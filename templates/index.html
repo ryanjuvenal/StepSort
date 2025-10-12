@@ -1,33 +1,45 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/25/25612.png">
-    <title>StepSort</title>
+    <meta charset="utf-8">
+    <title>StepSort - Home</title>
 </head>
 <body>
-    <h2>Adicionar números à lista</h2>
+    <h1>StepSort</h1>
 
-    <input type="number" id="numberInput" placeholder="Digite um número">
-    <button type="button" onclick="addNumber()">Adicionar</button>
-
-    <br><br>
-
-    <input type="number" id="randomAmount" placeholder="Quantidade">
-    <button type="button" onclick="generateRandom()">Gerar aleatórios</button>
-
-    <h3>Lista de números:</h3>
-    <p id="numbersList">[]</p>
+    {% if error %}
+    <p style="color:red;">{{ error }}</p>
+    {% endif %}
 
     <form method="post">
+        <label>Nome do jogador:</label><br>
+        <input type="text" name="player" id="player" placeholder="Seu nome" required><br><br>
+
+        <h3>Adicionar números</h3>
+        <input type="number" id="numberInput" placeholder="Digite um número">
+        <button type="button" onclick="addNumber()">Adicionar</button>
+
+        <br><br>
+        <input type="number" id="randomAmount" placeholder="Quantidade">
+        <button type="button" onclick="generateRandom()">Gerar aleatórios</button>
+
+        <h3>Lista de números:</h3>
+        <p id="numbersList">[]</p>
+
         <input type="hidden" name="numbers" id="hiddenNumbers">
+
+        <h3>Escolha o algoritmo (opcional):</h3>
         <input type="radio" id="bubbleSort" name="sorting" value="bubbleSort">
-         <label>Bubble Sort</label>
-         <input type="radio" id="selectionSort" name="sorting" value="selectionSort">
-         <label>Selection Sort</label><br>
-        <button type="submit" onclick="sendList()">Ordenar</button>
+        <label for="bubbleSort">Bubble Sort</label>
+        <input type="radio" id="selectionSort" name="sorting" value="selectionSort">
+        <label for="selectionSort">Selection Sort</label>
+        <br><br>
+
+        <button type="submit" onclick="sendList()">Ordenar e Salvar</button>
     </form>
+
+    <hr>
+    <a href="{{ url_for('history') }}">Ver histórico de listas</a>
 
     <script>
         let numbers = [];
@@ -35,7 +47,6 @@
         function addNumber() {
             const input = document.getElementById("numberInput");
             const value = input.value;
-
             if (value !== "") {
                 numbers.push(Number(value));
                 updateList();
@@ -45,11 +56,10 @@
         }
 
         function generateRandom() {
-            const qtd = document.getElementById("randomAmount").value;
-
-            if (qtd !== "" && qtd > 0) {
+            const qtd = parseInt(document.getElementById("randomAmount").value);
+            if (!isNaN(qtd) && qtd > 0) {
                 for (let i = 0; i < qtd; i++) {
-                    num = Math.floor(Math.random() * 1337);
+                    const num = Math.floor(Math.random() * 1337);
                     numbers.push(num);
                 }
                 updateList();
@@ -62,6 +72,7 @@
         }
 
         function sendList() {
+            // coloca a lista no campo hidden para enviar no form
             document.getElementById("hiddenNumbers").value = numbers.join(",");
         }
     </script>
