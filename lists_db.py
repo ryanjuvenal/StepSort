@@ -42,3 +42,25 @@ def listar_listas(limit: int = 100):
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+def limpar_listas():
+    conn = sqlite3.connect(DB_LISTS)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM listas")
+    conn.commit()
+    conn.close()
+
+def atualizar_nome(id_registro, novo_nome):
+    conn = sqlite3.connect(DB_LISTS)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE listas SET jogador = ? WHERE id = ?", (novo_nome, id_registro))
+    conn.commit()
+    conn.close()
+
+
+def deletar_registro(id_registro):
+    conn = sqlite3.connect(DB_LISTS)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM listas WHERE id = ?", (id_registro,))
+    conn.commit()
+    conn.close()

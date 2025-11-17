@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request
-from lists_db import create_tables, salvar_lista, listar_listas
-from datetime import datetime
+from lists_db import create_tables, salvar_lista, listar_listas, limpar_listas, atualizar_nome, deletar_registro
 from time import perf_counter
 
 app = Flask(__name__)
 
 create_tables()
+#limpar_listas()
 
 
 def bubble_sort(arr):
@@ -56,6 +56,10 @@ def index():
 
         if not jogador or not numbers:
             return render_template("index.html", error="Preencha o nome e a lista de números.")
+
+        # 🚨 AQUI está a verificação pedida:
+        if not method:
+            return render_template("index.html", error="Selecione um algoritmo de ordenação antes de continuar.")
 
         try:
             arr = [int(x) for x in numbers.split(",") if x.strip() != ""]
@@ -156,6 +160,20 @@ def history():
     registros = listar_listas(200)
     return render_template("history.html", registros=registros)
 
+@app.route("/edit/<int:id>", methods=["POST"])
+def editar(id):
+    novo_nome = request.form.get("novo_nome")
+    if not novo_nome:
+        return "Nome inválido", 400
+
+    atualizar_nome(id, novo_nome)
+    return ("", 204)  # retorna vazio, ideal para AJAX
+
+
+@app.route("/delete/<int:id>", methods=["POST"])
+def deletar(id):
+    deletar_registro(id)
+    return ("", 204)
 
 if __name__ == "__main__":
     app.run(debug=True)
