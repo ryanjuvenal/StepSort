@@ -3,28 +3,251 @@
 <head>
     <meta charset="utf-8">
     <title>Histórico - StepSort</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #121212;
+            font-family: "Poppins", sans-serif;
+            color: #e0e0e0;
+        }
+
+        .card-custom {
+            background: #1d1d1d;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+        }
+
+        h1 {
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .table-wrapper {
+            max-height: 440px;
+            overflow-y: auto;
+            border-radius: 10px;
+        }
+
+        .table-dark th {
+            background: #2c2c2c !important;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .table-dark td {
+            background: #1a1a1a;
+            color: #d2d2d2;
+        }
+
+        .table-dark tbody tr:hover {
+            background: #333333 !important;
+        }
+
+        /* BOTÕES PERSONALIZADOS */
+        .btn-edit {
+            background-color: #28cee3 !important;
+            color: #000 !important;
+            border: none !important;
+            font-weight: 600;
+        }
+
+        .btn-delete {
+            background-color: #f8dc4c !important;
+            color: #000 !important;
+            border: none !important;
+            font-weight: 600;
+        }
+
+        .btn-step {
+            background-color: #28cee3 !important;
+            color: #000 !important;
+            border-radius: 10px;
+            border: none;
+            padding: 10px 28px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: .2s;
+        }
+
+        .btn-step:hover {
+            filter: brightness(1.15);
+            transform: scale(1.03);
+        }
+
+        .btn-custom-history {
+            background: transparent !important;
+            color: #ffffff !important;
+            border: 1.5px solid #ffffff !important;
+            padding: 8px 20px;
+            border-radius: 10px;
+            transition: 0.25s;
+            text-decoration: none;
+        }
+
+        .btn-custom-history:hover {
+            background: #ffffff !important;
+            color: #000000 !important;
+            transform: scale(1.03);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Histórico de Listas Enviadas</h1>
 
-    <table border="1" cellpadding="6">
-        <tr>
-            <th>ID</th>
-            <th>Jogador</th>
-            <th>Números</th>
-            <th>Data</th>
-        </tr>
-        {% for r in registros %}
-        <tr>
-            <td>{{ r[0] }}</td>
-            <td>{{ r[1] }}</td>
-            <td>{{ r[2] }}</td>
-            <td>{{ r[3] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark bg-dark mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/icon.png') }}" width="35" height="35" class="me-2">
+                <span class="fw-bold">StepSort</span>
+            </a>
+        </div>
+    </nav>
 
-    <br>
-    <a href="{{ url_for('index') }}">Voltar</a>
+    <div class="container">
+
+        <h1 class="text-center mb-4">Histórico de Listas</h1>
+
+        <div class="card-custom">
+
+            <div class="table-wrapper">
+                <table class="table table-dark table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 70px;"><i class="bi bi-hash"></i> ID</th>
+                            <th style="width: 200px;"><i class="bi bi-person-fill"></i> Jogador</th>
+                            <th><i class="bi bi-list-ol"></i> Lista</th>
+                            <th style="width: 220px;" class="text-center"><i class="bi bi-calendar-event"></i> Data e Hora</th>
+                            <th class="text-center" style="width: 160px;"><i class="bi bi-gear-fill"></i> Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for r in registros %}
+                        <tr>
+                            <td class="text-center">{{ r[0] }}</td>
+                            <td>{{ r[1] }}</td>
+                            <td>{{ r[2] }}</td>
+                            <td class="text-center">{{ r[3] }}</td>
+
+                            <td class="text-center">
+
+                                <!-- EDITAR -->
+                                <button class="btn btn-edit btn-sm me-2"
+                                        onclick="abrirModal('{{ r[0] }}', '{{ r[1] }}')">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
+                                <!-- EXCLUIR -->
+                                <button class="btn btn-delete btn-sm"
+                                        onclick="deletar({{ r[0] }})">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn-custom-history">
+                <i class="bi bi-arrow-left-circle"></i> Voltar ao início
+            </a>
+        </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR -->
+    <div class="modal fade" id="modalEditar" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-pencil-fill"></i> Editar nome</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="formEditar">
+                <input type="hidden" id="edit-id">
+                <label class="form-label">Novo nome:</label>
+                <input type="text" id="edit-nome" class="form-control">
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button class="btn btn-success" onclick="salvarEdicao()">Salvar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+<script>
+// Função para abrir o modal de edição de nome de jogador
+function abrirModal(id, nome) {
+    // Preenche os campos ocultos do modal com os valores do registro selecionado
+    document.getElementById("edit-id").value = id;      // ID do registro
+    document.getElementById("edit-nome").value = nome;  // Nome atual do jogador
+
+    // Inicializa e exibe o modal usando o Bootstrap
+    new bootstrap.Modal(document.getElementById("modalEditar")).show();
+}
+
+// Função para salvar a edição do nome
+function salvarEdicao() {
+    // Pega os valores atuais do modal
+    let id = document.getElementById("edit-id").value;
+    let nome = document.getElementById("edit-nome").value;
+
+    // Envia uma requisição POST para o endpoint /edit/<id>
+    fetch(`/edit/${id}`, {
+        method: "POST", // método HTTP
+        headers: {"Content-Type": "application/x-www-form-urlencoded"}, // tipo de conteúdo
+        body: `novo_nome=${encodeURIComponent(nome)}` // dados enviados, codificados corretamente
+    })
+    // Após a requisição ser concluída, recarrega a página para atualizar a tabela
+    .then(() => location.reload());
+}
+
+// Função para deletar um registro
+function deletar(id) {
+    // Pergunta ao usuário se ele tem certeza que quer excluir
+    if (!confirm("Tem certeza que deseja excluir este registro?")) return;
+
+    // Envia requisição POST para o endpoint /delete/<id> para remover o registro
+    fetch(`/delete/${id}`, { method: "POST" })
+        // Após a exclusão, recarrega a página para atualizar a tabela
+        .then(() => location.reload());
+}
+</script>
+
+
 </body>
 </html>
