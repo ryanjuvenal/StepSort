@@ -210,31 +210,44 @@
     </div>
 
 <script>
+// Função para abrir o modal de edição de nome de jogador
 function abrirModal(id, nome) {
-    document.getElementById("edit-id").value = id;
-    document.getElementById("edit-nome").value = nome;
+    // Preenche os campos ocultos do modal com os valores do registro selecionado
+    document.getElementById("edit-id").value = id;      // ID do registro
+    document.getElementById("edit-nome").value = nome;  // Nome atual do jogador
 
+    // Inicializa e exibe o modal usando o Bootstrap
     new bootstrap.Modal(document.getElementById("modalEditar")).show();
 }
 
+// Função para salvar a edição do nome
 function salvarEdicao() {
+    // Pega os valores atuais do modal
     let id = document.getElementById("edit-id").value;
     let nome = document.getElementById("edit-nome").value;
 
+    // Envia uma requisição POST para o endpoint /edit/<id>
     fetch(`/edit/${id}`, {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: `novo_nome=${encodeURIComponent(nome)}`
-    }).then(() => location.reload());
+        method: "POST", // método HTTP
+        headers: {"Content-Type": "application/x-www-form-urlencoded"}, // tipo de conteúdo
+        body: `novo_nome=${encodeURIComponent(nome)}` // dados enviados, codificados corretamente
+    })
+    // Após a requisição ser concluída, recarrega a página para atualizar a tabela
+    .then(() => location.reload());
 }
 
+// Função para deletar um registro
 function deletar(id) {
+    // Pergunta ao usuário se ele tem certeza que quer excluir
     if (!confirm("Tem certeza que deseja excluir este registro?")) return;
 
+    // Envia requisição POST para o endpoint /delete/<id> para remover o registro
     fetch(`/delete/${id}`, { method: "POST" })
+        // Após a exclusão, recarrega a página para atualizar a tabela
         .then(() => location.reload());
 }
 </script>
+
 
 </body>
 </html>

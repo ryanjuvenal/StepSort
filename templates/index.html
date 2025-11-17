@@ -5,7 +5,7 @@
     <title>StepSort - Home</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
@@ -16,6 +16,7 @@
             background: #0d0d0d;
             color: #f0f0f0;
             padding: 25px;
+            font-family: Poppins, sans-serif;
         }
 
         .container-box {
@@ -34,9 +35,7 @@
             border-radius: 10px;
             border: none;
         }
-        .btn-custom:hover {
-            background: #1bb1c6;
-        }
+        .btn-custom:hover { background: #1bb1c6; }
 
         .btn-yellow {
             background: #f8dc4c;
@@ -45,14 +44,29 @@
             border-radius: 10px;
             border: none;
         }
-        .btn-yellow:hover {
-            background: #e6c839;
-        }
+        .btn-yellow:hover { background: #e6c839; }
 
-        a, a:hover, a:focus {
+        /* Botão transparente com borda azul */
+        .btn-outline-custom {
             color: #28cee3;
-            text-decoration: none;
+            border: 2px solid #28cee3;
+            border-radius: 10px;
+            font-weight: bold;
+            background: transparent;
         }
+        .btn-outline-custom:hover { background: #28cee3; color: black; }
+
+        /* Botão transparente com borda amarela */
+        .btn-outline-yellow {
+            color: #f8dc4c;
+            border: 2px solid #f8dc4c;
+            border-radius: 10px;
+            font-weight: bold;
+            background: transparent;
+        }
+        .btn-outline-yellow:hover { background: #f8dc4c; color: black; }
+
+        a, a:hover, a:focus { color: #28cee3; text-decoration: none; }
 
         .numbers-box {
             background: rgba(255,255,255,0.05);
@@ -61,16 +75,12 @@
             padding: 10px;
         }
     </style>
-
 </head>
 
 <body>
 
 <div class="container-box">
-
-    <h1 class="mb-4 text-center">
-        StepSort
-    </h1>
+    <h1 class="mb-4 text-center">StepSort</h1>
 
     {% if error %}
     <div class="alert alert-danger text-center">
@@ -78,17 +88,14 @@
     </div>
     {% endif %}
 
-    <form method="post">
+    <form method="post" onsubmit="return sendList()">
 
         <!-- Nome -->
-        <label class="form-label">
-            <i class="bi bi-person-fill"></i> Nome do Jogador:
-        </label>
+        <label class="form-label"><i class="bi bi-person-fill"></i> Nome do Jogador:</label>
         <input type="text" class="form-control mb-3" name="player" id="player" placeholder="Seu nome" required>
 
         <!-- Adicionar número -->
         <h5 class="mt-4"><i class="bi bi-plus-circle-fill text-info"></i> Adicionar números</h5>
-
         <div class="input-group mb-3">
             <input type="number" id="numberInput" class="form-control" placeholder="Digite um número">
             <button type="button" class="btn btn-custom" onclick="addNumber()">
@@ -108,28 +115,44 @@
         <h5><i class="bi bi-list-ol"></i> Lista atual:</h5>
         <p id="numbersList" class="numbers-box">[]</p>
 
+        <!-- BOTÕES DE EDIÇÃO / APAGAR -->
+        <div class="d-flex gap-2 mb-4">
+            <button type="button" id="btnEditList" class="btn btn-outline-custom flex-grow-1" onclick="openEditModal()">
+                <i class="bi bi-pencil-square"></i> Editar Lista
+            </button>
+            <button type="button" id="btnClearList" class="btn btn-outline-yellow flex-grow-1" onclick="clearList()">
+                <i class="bi bi-trash3-fill"></i> Apagar Lista
+            </button>
+        </div>
+
         <input type="hidden" name="numbers" id="hiddenNumbers">
 
         <!-- Algoritmos -->
         <h5 class="mt-4"><i class="bi bi-cpu-fill"></i> Escolha o algoritmo:</h5>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="bubbleSort" name="sorting" value="bubbleSort">
+                    <label class="form-check-label" for="bubbleSort">
+                        <i class="bi bi-bubble-chart text-info"></i> Bubble Sort
+                    </label>
+                </div>
 
-        <div class="form-check">
-            <input class="form-check-input" type="radio" id="bubbleSort" name="sorting" value="bubbleSort">
-            <label class="form-check-label" for="bubbleSort">
-                <i class="bi bi-bubble-chart text-info"></i> Bubble Sort
-            </label>
-        </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="selectionSort" name="sorting" value="selectionSort">
+                    <label class="form-check-label" for="selectionSort">Selection Sort</label>
+                </div>
+            </div>
 
-        <div class="form-check mb-4">
-            <input class="form-check-input" type="radio" id="selectionSort" name="sorting" value="selectionSort">
-            <label class="form-check-label" for="selectionSort">
-                Selection Sort
-            </label>
+            <!-- Botão de info sempre visível -->
+            <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#algorithmInfoModal">
+                <i class="bi bi-info-circle"></i> Como funciona
+            </button>
         </div>
 
         <!-- Botão principal -->
         <div class="d-grid">
-            <button type="submit" class="btn btn-custom btn-lg" onclick="sendList()">
+            <button type="submit" class="btn btn-custom btn-lg">
                 <i class="bi bi-check-circle-fill"></i> Ordenar e Salvar
             </button>
         </div>
@@ -142,72 +165,227 @@
             <i class="bi bi-clock-history"></i> Ver Histórico
         </a>
     </div>
-
 </div>
 
+<!-- MODAL EDITAR LISTA -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil-fill"></i> Editar Lista</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Edite os valores (separe por vírgulas):</label>
+                <textarea id="editTextarea" class="form-control" rows="4" placeholder="ex: 5, 3, 10"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
+                <button class="btn btn-custom" onclick="saveEditedList()" type="button" style="font-weight: normal;">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL INFO COM ABAS -->
+<div class="modal fade" id="algorithmInfoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-info-circle"></i> Como funcionam os algoritmos</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" id="algorithmTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="bubble-tab" data-bs-toggle="tab" data-bs-target="#bubble"
+                                type="button" role="tab" style="color: #28cee3;">Bubble Sort</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="selection-tab" data-bs-toggle="tab" data-bs-target="#selection"
+                                type="button" role="tab" style="color: #f8dc4c;">Selection Sort</button>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content mt-3">
+                    <div class="tab-pane fade show active" id="bubble" role="tabpanel">
+                        <p>
+                            O Bubble Sort compara pares de elementos consecutivos da lista e troca-os se estiverem na ordem errada.
+                            Esse processo se repete até que a lista esteja completamente ordenada.
+                        </p>
+                        <ul>
+                            <li>Simples de implementar.</li>
+                            <li>Complexidade: O(n²) no pior caso.</li>
+                            <li>Funciona bem para listas pequenas.</li>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="selection" role="tabpanel">
+                        <p>
+                            O Selection Sort encontra o menor (ou maior) elemento da lista e o coloca na posição correta.
+                            Repete-se para todas as posições, até que a lista esteja ordenada.
+                        </p>
+                        <ul>
+                            <li>Não é estável.</li>
+                            <li>Complexidade: O(n²) em todos os casos.</li>
+                            <li>Efetivo para pequenas listas ou listas quase ordenadas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+    // Array que armazena os números adicionados pelo usuário
     let numbers = [];
 
+    // ----------------------------------------------------
+    // Adiciona um número digitado pelo usuário à lista
+    // ----------------------------------------------------
     function addNumber() {
         const input = document.getElementById("numberInput");
 
+        // Só adiciona se não estiver vazio
         if (input.value !== "") {
-            // validação 4 dígitos
+
+            // Impede números com mais de 4 dígitos
             if (input.value.length > 4) {
-                alert("Cada número deve ter no máximo 4 dígitos (até 9999).");
+                alert("Cada número deve ter no máximo 4 dígitos.");
                 input.value = "";
                 return;
             }
 
-            // limite máximo de 20 elementos
+            // Limita a 20 números no total
             if (numbers.length >= 20) {
                 alert("Limite máximo de 20 números atingido.");
                 return;
             }
 
+            // Converte para número e adiciona ao array
             numbers.push(Number(input.value));
+
+            // Atualiza a exibição da lista
             updateList();
+
+            // Limpa e foca o campo novamente
             input.value = "";
             input.focus();
         }
     }
 
+    // ----------------------------------------------------
+    // Gera números aleatórios e adiciona à lista
+    // ----------------------------------------------------
     function generateRandom() {
         const amount = parseInt(document.getElementById("randomAmount").value);
 
+        // Se valor for inválido, não faz nada
         if (isNaN(amount) || amount <= 0) return;
 
-        // valida limite de 20
+        // Garante que não passe de 20 números
         if (numbers.length + amount > 20) {
-            alert("Você pode ter no máximo 20 números na lista.");
+            alert("Você pode ter no máximo 20 números.");
             return;
         }
 
-        // gerar valores até 9999
-        for (let i = 0; i < amount; i++) {
+        // Gera números aleatórios entre 0 e 9999
+        for (let i = 0; i < amount; i++)
             numbers.push(Math.floor(Math.random() * 10000));
-        }
 
         updateList();
         document.getElementById("randomAmount").value = "";
     }
 
+    // ----------------------------------------------------
+    // Atualiza a exibição visual da lista
+    // ----------------------------------------------------
     function updateList() {
-        document.getElementById("numbersList").textContent = `[${numbers.join(", ")}]`;
+        document.getElementById("numbersList").textContent =
+            `[${numbers.join(", ")}]`;
     }
 
-    function sendList() {
+    // ----------------------------------------------------
+    // Apaga toda a lista com confirmação
+    // ----------------------------------------------------
+    function clearList() {
+        if (!confirm("Tem certeza que deseja apagar toda a lista?")) return;
+        numbers = [];
+        updateList();
+    }
 
-        // validação de segurança: nada acima de 4 dígitos
-        for (let n of numbers) {
-            if (String(n).length > 4) {
-                alert("Todos os números devem ter no máximo 4 dígitos.");
-                return false;
+    // ----------------------------------------------------
+    // Abre o modal para editar a lista existente
+    // ----------------------------------------------------
+    function openEditModal() {
+        // Coloca os números atuais no textarea
+        document.getElementById("editTextarea").value = numbers.join(", ");
+
+        // Instancia e abre o modal bootstrap
+        const modalEl = document.getElementById("editModal");
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+
+    // ----------------------------------------------------
+    // Salva as alterações feitas no modal de edição
+    // ----------------------------------------------------
+    function saveEditedList() {
+        let text = document.getElementById("editTextarea").value;
+
+        // Cria lista removendo espaços e vazios
+        let newList = text.split(",")
+                          .map(v => v.trim())
+                          .filter(v => v !== "");
+
+        // Validação: somente números de até 4 dígitos
+        for (let n of newList) {
+            if (isNaN(n) || n.length > 4) {
+                alert("Todos os valores devem ser números com no máximo 4 dígitos.");
+                return;
             }
         }
 
+        // Limite de 20 valores
+        if (newList.length > 20) {
+            alert("A lista pode ter no máximo 20 valores.");
+            return;
+        }
+
+        // Atualiza a lista principal
+        numbers = newList.map(Number);
+        updateList();
+
+        // Fecha o modal após salvar
+        const modalEl = document.getElementById("editModal");
+        const instance = bootstrap.Modal.getInstance(modalEl);
+        if (instance) instance.hide();
+    }
+
+    // ----------------------------------------------------
+    // Envia a lista ao backend antes de submeter o formulário
+    // ----------------------------------------------------
+    function sendList() {
+        // Impede envio caso algum número tenha mais de 4 dígitos
+        for (let n of numbers) {
+            if (String(n).length > 4) {
+                alert("Todos os números devem ter no máximo 4 dígitos.");
+                return false; // Cancela o envio
+            }
+        }
+
+        // Transforma a lista em string e envia via campo oculto
         document.getElementById("hiddenNumbers").value = numbers.join(",");
-        return true;
+
+        return true; // Permite enviar
     }
 </script>
 
