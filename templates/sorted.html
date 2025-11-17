@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
-    <title>StepSort</title>
+    <title>StepSort - Resultado</title>
 </head>
 <body>
     <div class="container">
@@ -14,22 +14,158 @@
             <h2>Algoritmo: {{ method }}</h2>
             <h2>Complexidade Teórica: {{ complexity }}</h2>
             <h2>Comparações: {{ comparisons }} | Trocas: {{ swaps }}</h2>
+            <h2>Tempo de Execução: <span style="color: #f8dc4c;">{{ elapsed_time }} segundos</span></h2>
             <h2>Lista Original: {{ originalArr }}</h2>
             <h2>Resultado Final: <span style="color: #28cee3;">{{ sortedArr }}</span></h2>
         </div>
 
-        <h1>Processo de Ordenação ({{ steps|length }} etapas):</h1>
-        <div id="steps">
-            {% for step in steps %}
-            <div class="step">
-                <h3 style="color: #f8dc4c;">{{ loop.index }}. Trocar {{ step[1][0] }} com {{ step[1][1] }}</h3>
-                <h3 style="color: #28cee3;">{{ step[0] }}</h3>
-            </div>
-            {% endfor %}
+        <div class="button-container">
+            {% if method != 'Sort Padrão (Python)' %}
+                <button id="scenarioBtn" class="modal-btn">Ver Melhor/Pior Cenário</button>
+                <button id="compareBtn" class="modal-btn">Comparar Algoritmos</button>
+            {% endif %}
         </div>
 
-        <a href="{{ url_for('index') }}" style="margin-top: 2rem; color: #28cee3;">Nova Ordenação</a> |
-        <a href="{{ url_for('history') }}" style="color: #f8dc4c;">Ver Histórico</a>
+        {% if show_steps %}
+            <h1>Processo de Ordenação</h1>
+            <p id="animation-status">Iniciando animação...</p>
+
+            <div id="steps">
+                </div>
+
+            <script>
+                const stepsData = {{ steps | tojson }};
+                const stepsContainer = document.getElementById("steps");
+                const statusElement = document.getElementById("animation-status");
+
+                let currentStep = 0;
+                const animationSpeed = 50;
+
+                function showNextStep() {
+                    if (currentStep >= stepsData.length) {
+                        statusElement.textContent = `Animação concluída! (${stepsData.length} etapas)`;
+                        return;
+                    }
+
+                    const step = stepsData[currentStep];
+                    const listState = step[0];
+                    const swap = step[1];
+                    const stepIndex = currentStep + 1;
+
+                    const newStepEl = document.createElement('div');
+                    newStepEl.className = 'step animated-step';
+
+                    const listString = `[${listState.join(", ")}]`;
+
+                    newStepEl.innerHTML = `
+                        <h3 style="color: #f8dc4c;">${stepIndex}. Trocar ${swap[0]} com ${swap[1]}</h3>
+                        <h3 style="color: #28cee3;">${listString}</h3>
+                    `;
+
+                    stepsContainer.appendChild(newStepEl);
+
+                    stepsContainer.scrollTop = stepsContainer.scrollHeight;
+
+                    statusElement.textContent = `Mostrando etapa ${stepIndex} de ${stepsData.length}...`;
+
+                    currentStep++;
+                    setTimeout(showNextStep, animationSpeed);
+                }
+
+                setTimeout(showNextStep, animationSpeed);
+            </script>
+
+        {% else %}
+            <h1 style="color: #f8dc4c;">A lista é muito grande ({{ originalArr|length }} itens). As etapas de ordenação não serão exibidas.</h1>
+        {% endif %}
+
+
+        <div class="links-footer">
+            <a href="{{ url_for('index') }}">Nova Ordenação</a> |
+            <a href="{{ url_for('history') }}">Ver Histórico</a>
+        </div>
     </div>
+
+    <div id="scenarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeScenario">&times;</span>
+            <h2>Melhor e Pior Cenário (usando {{ method }})</h2>
+
+            <div class="scenario-box">
+                <h3>Melhor Cenário (Lista já ordenada)</h3>
+                <p class="scenario-list">{{ scenario_data.best_arr }}</p>
+                <p>Tempo: <span style="color: #28cee3;">{{ scenario_data.best_results.time }} s</span></p>
+                <p>Comparações: {{ scenario_data.best_results.comp }} | Trocas: {{ scenario_data.best_results.swap }}</p>
+            </div>
+
+            <div class="scenario-box">
+                <h3>Pior Cenário (Lista invertida)</h3>
+                <p class="scenario-list">{{ scenario_data.worst_arr }}</p>
+                <p>Tempo: <span style="color: #f8dc4c;">{{ scenario_data.worst_results.time }} s</span></p>
+                <p>Comparações: {{ scenario_data.worst_results.comp }} | Trocas: {{ scenario_data.worst_results.swap }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="compareModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeCompare">&times;</span>
+            <h2>Comparação de Algoritmos (para sua lista original)</h2>
+
+            <div class="scenario-box">
+                <h3>Bubble Sort</h3>
+                <p>Tempo: <span style="color: #28cee3;">{{ comparison_data.bubble.time }} s</span></p>
+                <p>Comparações: {{ comparison_data.bubble.comp }} | Trocas: {{ comparison_data.bubble.swap }}</p>
+            </div>
+
+            <div class="scenario-box">
+                <h3>Selection Sort</h3>
+                <p>Tempo: <span style="color: #f8dc4c;">{{ comparison_data.selection.time }} s</span></p>
+                <p>Comparações: {{ comparison_data.selection.comp }} | Trocas: {{ comparison_data.selection.swap }}</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var scenarioModal = document.getElementById("scenarioModal");
+        var compareModal = document.getElementById("compareModal");
+
+        var scenarioBtn = document.getElementById("scenarioBtn");
+        var compareBtn = document.getElementById("compareBtn");
+
+        var closeScenario = document.getElementById("closeScenario");
+        var closeCompare = document.getElementById("closeCompare");
+
+        if (scenarioBtn) {
+            scenarioBtn.onclick = function() {
+                scenarioModal.style.display = "block";
+            }
+        }
+        if (compareBtn) {
+            compareBtn.onclick = function() {
+                compareModal.style.display = "block";
+            }
+        }
+
+        if (closeScenario) {
+            closeScenario.onclick = function() {
+                scenarioModal.style.display = "none";
+            }
+        }
+        if (closeCompare) {
+            closeCompare.onclick = function() {
+                compareModal.style.display = "none";
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == scenarioModal) {
+                scenarioModal.style.display = "none";
+            }
+            if (event.target == compareModal) {
+                compareModal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
