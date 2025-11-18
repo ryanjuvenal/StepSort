@@ -1,4 +1,4 @@
- **Relatório Pedagógico do Plugin Gamificado **
+ **Relatório Pedagógico do Plugin Gamificado**
 
 🧩 1. Identificação do Plugin
 
