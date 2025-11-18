@@ -79,3 +79,9 @@ http://127.0.0.1:5000/health
 
 - **Ryan Juvenal Santos Oliveira**
 - **Cesar Augusto Salles Marcondes**
+
+---
+
+## Storytelling
+
+- https://1drv.ms/v/c/7be677474e93e465/ETRp5sanpThJvQtQ6pJ4FlYBbbI_CrWJVUZT9VT52zE6IA?e=OUchsj
