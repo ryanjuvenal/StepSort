@@ -1,6 +1,8 @@
+
 from flask import Flask, render_template, request
 from lists_db import create_tables, salvar_lista, listar_listas, limpar_listas, atualizar_nome, deletar_registro
 from time import perf_counter
+import random
 
 # Cria a aplicação Flask
 app = Flask(__name__)
@@ -13,7 +15,7 @@ create_tables()
 # -----------------------------------------------
 # Função BUBBLE SORT com contagem e passos
 # -----------------------------------------------
-def bubble_sort(arr):
+def bubble_sort(arr, steps_count = None):
     steps = []          # Armazena os passos (usado apenas quando a lista tem até 20 itens)
     arr = arr[:]         # Copia a lista para evitar modificar a original
     n = len(arr)
@@ -22,6 +24,10 @@ def bubble_sort(arr):
 
     # Loop externo controla quantas passadas serão feitas
     for i in range(n - 1):
+        # Faz um early return caso o limite do steps_count seja atigindo
+        if steps_count is not None and swaps > steps_count:
+            return arr, steps, comparisons, swaps
+           
         # Loop interno faz comparações entre pares adjacentes
         for j in range(n - i - 1):
             comparisons += 1
@@ -41,7 +47,7 @@ def bubble_sort(arr):
 # -----------------------------------------------
 # Função SELECTION SORT com contagem e passos
 # -----------------------------------------------
-def selection_sort(arr):
+def selection_sort(arr, steps_count = None):
     steps = []
     arr = arr[:]
     n = len(arr)
@@ -50,6 +56,10 @@ def selection_sort(arr):
 
     # Cada posição "i" buscará o menor elemento à frente
     for i in range(n - 1):
+        # Faz um early return caso o limite do steps_count seja atigindo
+        if steps_count is not None and swaps > steps_count:
+            return arr, steps, comparisons, swaps
+        
         min_idx = i
 
         # Encontra o menor item no restante da lista
@@ -69,6 +79,76 @@ def selection_sort(arr):
 
     return arr, steps, comparisons, swaps
 
+# -----------------------------------------------
+# Função INSERTION SORT com contagem e passos corrigida
+# -----------------------------------------------
+def insertion_sort(arr, steps_count = None):
+    steps = []          # Armazena os passos (usado apenas quando a lista tem até 20 itens)
+    arr = arr[:]        # Copia a lista para evitar modificar a original
+    n = len(arr)
+    comparisons = 0     # Contador de comparações
+    swaps = 0           # Contador de trocas (movimentações)
+
+    for i in range(1, n):
+        # Faz um early return caso o limite do steps_count seja atigindo
+        if steps_count is not None and swaps > steps_count:
+            return arr, steps, comparisons, swaps
+        
+        key = arr[i]
+        j = i - 1
+
+        # Move elementos maiores que key para a direita
+        while j >= 0:
+            comparisons += 1  # Cada verificação arr[j] > key conta como comparação
+
+            if arr[j] > key:
+                arr[j + 1] = arr[j]  
+                swaps += 1
+
+                # Registrar passo: (lista_atual, (elemento_movido, elemento_comparado))
+                if n <= 20:
+                    steps.append((arr[:], (arr[j], key)))
+
+                j -= 1
+            else:
+                break
+
+        # Posiciona o key na posição correta
+        arr[j + 1] = key
+
+        # Se o key realmente mudou de posição, registrar passo final da inserção
+        if j + 1 != i:
+            if n <= 20:
+                steps.append((arr[:], (key, arr[j + 1])))
+
+    return arr, steps, comparisons, swaps
+
+
+#def get_average_sort(arr, steps_count, algorithm):
+    #return algorithm(arr, steps_count)
+    
+
+def average_case_sort(algorithm, n, samples=100):
+    total_comps = 0
+    total_swaps = 0
+    total_time = 0
+
+    for _ in range(samples):
+        arr = [random.randint(0, 1000) for _ in range(n)]
+        start = perf_counter()
+        _, _, comps, swaps = algorithm(arr)
+        elapsed = perf_counter() - start
+
+        total_comps += comps
+        total_swaps += swaps
+        total_time += elapsed
+
+    return {
+        "comp": int(total_comps / samples),
+        "swap": int(total_swaps / samples),
+        "time": f"{(total_time / samples):.8f}"
+    }
+#'time': f"{(perf_counter() - start):.8f}",
 
 # -----------------------------------------------
 # ROTA PRINCIPAL: página inicial
@@ -80,6 +160,25 @@ def index():
         jogador = request.form.get("player")
         numbers = request.form.get("numbers")
         method = request.form.get("sorting")
+        
+        # algoritmo = None
+        #  complexidade = None
+
+        match method:
+            case "bubbleSort":
+                algoritmo = "Bubble Sort"
+            case "selectionSort":
+                algoritmo = "Selection Sort"
+            case "insertionSort":
+                algoritmo = "Insertion Sort"
+
+        match method:
+            case "bubbleSort":
+                complexidade = "O(n²)"
+            case "selectionSort":
+                complexidade = "O(n²)"
+            case "insertionSort":
+                complexidade = "O(n²)/O(n)"
 
         # Validação do nome e lista
         if not jogador or not numbers:
@@ -100,7 +199,7 @@ def index():
             return render_template("index.html", error="Limite máximo de 20 números por ordenação.")
 
         # Salva a lista no banco
-        salvar_lista(jogador, arr)
+        salvar_lista(jogador, arr, algoritmo, complexidade)
 
         # Variáveis padrão
         sorted_arr = arr[:]
@@ -119,6 +218,10 @@ def index():
         elif method == "selectionSort":
             sorted_arr, steps, comparisons, swaps = selection_sort(arr)
             display_method = "Selection Sort"
+        
+        elif method == "insertionSort":
+            sorted_arr, steps, comparisons, swaps = insertion_sort(arr)
+            display_method = "Insertion Sort"
 
         else:
             sorted_arr = sorted(arr)  # fallback para ordenação nativa do Python
@@ -143,10 +246,16 @@ def index():
         start_selection = perf_counter()
         _, _, selection_comp, selection_swap = selection_sort(arr)
         selection_time = perf_counter() - start_selection
+        
+        # Tempo Insertion Sort com mesma entrada
+        start_insertion = perf_counter()
+        _, _, insertion_comp, insertion_swap = insertion_sort(arr)
+        insertion_time = perf_counter() - start_insertion
 
         comparison_data = {
             "bubble": {"time": f"{bubble_time:.8f}", "comp": bubble_comp, "swap": bubble_swap},
             "selection": {"time": f"{selection_time:.8f}", "comp": selection_comp, "swap": selection_swap},
+            "insertion": {"time": f"{insertion_time:.8f}", "comp": insertion_comp, "swap": insertion_swap},
         }
 
         # -----------------------------------------
@@ -154,19 +263,32 @@ def index():
         # -----------------------------------------
         best_case_arr = sorted(arr)
         worst_case_arr = sorted(arr, reverse=True)
+        average_case_arr = []
 
         best_case_results = {}
         worst_case_results = {}
+        average_case_results = {}
+        melhor_caso_notacao = ""
+        caso_medio_notacao = ""
+        pior_caso_notacao = ""
 
         # Melhor e pior caso do Bubble Sort
         if method == "bubbleSort":
             start = perf_counter()
             _, _, c, s = bubble_sort(best_case_arr)
-            best_case_results = {'time': f"{perf_counter() - start:.8f}", 'comp': c, 'swap': s}
+            best_case_results = {'time': f"{perf_counter() - start:.8f}", 'comp': c, 'swap': s} 
 
             start = perf_counter()
             _, _, c, s = bubble_sort(worst_case_arr)
             worst_case_results = {'time': f"{perf_counter() - start:.8f}", 'comp': c, 'swap': s}
+
+            average_case = average_case_sort(bubble_sort, len(arr), 100)
+            average_case_results = {'time': average_case["time"], 'comp': average_case["comp"], 'swap': average_case["swap"]}
+            average_case_arr = sorted(arr)
+
+            melhor_caso_notacao = "Ω(n)"
+            caso_medio_notacao = "Θ(n²)"
+            pior_caso_notacao = "O(n²)"
 
         # Melhor e pior caso do Selection Sort
         elif method == "selectionSort":
@@ -178,22 +300,57 @@ def index():
             _, _, c, s = selection_sort(worst_case_arr)
             worst_case_results = {'time': f"{perf_counter() - start:.8f}", 'comp': c, 'swap': s}
 
+            average_case = average_case_sort(selection_sort, len(arr), 100)
+            average_case_results = {'time': average_case["time"], 'comp': average_case["comp"], 'swap': average_case["swap"]}
+            average_case_arr = sorted(arr)
+
+            melhor_caso_notacao = "Ω(n²)"
+            caso_medio_notacao = "Θ(n²)"
+            pior_caso_notacao = "O(n²)"
+
+        
+        # Melhor e pior caso do insertion Sort
+        elif method == "insertionSort":
+            start = perf_counter()
+            _, _, c, s = insertion_sort(best_case_arr)
+            best_case_results = {'time': f"{perf_counter() - start:.8f}", 'comp': c, 'swap': s}
+
+            start = perf_counter()
+            _, _, c, s = insertion_sort(worst_case_arr)
+            worst_case_results = {'time': f"{perf_counter() - start:.8f}", 'comp': c, 'swap': s}
+            
+            
+            average_case = average_case_sort(insertion_sort, len(arr), 100)
+            average_case_results = {'time': average_case["time"], 'comp': average_case["comp"], 'swap': average_case["swap"]}
+            average_case_arr = sorted(arr)
+
+            melhor_caso_notacao = "Ω(n)"
+            caso_medio_notacao = "Θ(n²)"
+            pior_caso_notacao = "O(n²)"
+
         scenario_data = {
             "best_arr": best_case_arr,
             "worst_arr": worst_case_arr,
+            "average_arr": average_case_arr,
             "best_results": best_case_results,
-            "worst_results": worst_case_results
+            "worst_results": worst_case_results,
+            "average_results": average_case_results,
         }
 
         # Renderiza a página de resultados
         return render_template(
             "sorted.html",
+            melhor_caso_notacao=melhor_caso_notacao,
+            caso_medio_notacao=caso_medio_notacao,
+            pior_caso_notacao=pior_caso_notacao,
             player=jogador,
             method=display_method,
             originalArr=arr,
+            sorting=method,
+            numbers=numbers,
             sortedArr=sorted_arr,
             steps=steps,
-            complexity=complexity,
+            complexity=complexidade,
             comparisons=comparisons,
             swaps=swaps,
             elapsed_time=f"{elapsed_main:.8f}",

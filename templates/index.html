@@ -142,6 +142,11 @@
                     <input class="form-check-input" type="radio" id="selectionSort" name="sorting" value="selectionSort">
                     <label class="form-check-label" for="selectionSort">Selection Sort</label>
                 </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="insertionSort" name="sorting" value="insertionSort">
+                    <label class="form-check-label" for="insertionSort">Insertion Sort</label>
+                </div>
             </div>
 
             <!-- Botão de info sempre visível -->
@@ -206,6 +211,10 @@
                         <button class="nav-link" id="selection-tab" data-bs-toggle="tab" data-bs-target="#selection"
                                 type="button" role="tab" style="color: #f8dc4c;">Selection Sort</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="insertion-tab" data-bs-toggle="tab" data-bs-target="#insertion"
+                                type="button" role="tab" style="color: #f8744c;">Insertion Sort</button>
+                    </li>
                 </ul>
 
                 <!-- Tab panes -->
@@ -229,6 +238,17 @@
                         <ul>
                             <li>Não é estável.</li>
                             <li>Complexidade: O(n²) em todos os casos.</li>
+                            <li>Efetivo para pequenas listas ou listas quase ordenadas.</li>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="insertion" role="tabpanel">
+                         <p>
+                             O Insertion Sort percorre a lista e insere cada elemento na posição correta dentro da sublista já ordenada.
+                             Funciona de forma semelhante a como se organizaria cartas na mão.
+                        </p>
+                        <ul>
+                            <li>É estável.</li>
+                            <li>Complexidade: O(n²) no pior caso, O(n) no melhor caso.</li>
                             <li>Efetivo para pequenas listas ou listas quase ordenadas.</li>
                         </ul>
                     </div>

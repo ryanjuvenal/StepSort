@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -138,18 +139,24 @@
                             <th class="text-center" style="width: 70px;"><i class="bi bi-hash"></i> ID</th>
                             <th style="width: 200px;"><i class="bi bi-person-fill"></i> Jogador</th>
                             <th><i class="bi bi-list-ol"></i> Lista</th>
+                            <th>Algoritmo</th>
+                            <th>Complexidade</th>
                             <th style="width: 220px;" class="text-center"><i class="bi bi-calendar-event"></i> Data e Hora</th>
                             <th class="text-center" style="width: 160px;"><i class="bi bi-gear-fill"></i> Ações</th>
+                            
                         </tr>
                     </thead>
 
                     <tbody>
+                        
                         {% for r in registros %}
                         <tr>
                             <td class="text-center">{{ r[0] }}</td>
                             <td>{{ r[1] }}</td>
                             <td>{{ r[2] }}</td>
                             <td class="text-center">{{ r[3] }}</td>
+                            <td class="text-center">{{ r[4] }}</td>
+                            <td class="text-center">{{ r[5] }}</td>
 
                             <td class="text-center">
 

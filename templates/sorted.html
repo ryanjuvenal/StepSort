@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -416,13 +417,22 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="modal-body">
                 <div class="info-card">
-                    <h4><i class="bi bi-arrow-up-circle-fill"></i> Melhor Cenário</h4>
+                    <h4><i class="bi bi-bar-chart-fill"></i> Complexidade: <span>{{ complexity }}</span> </h4>
+                </div>
+                <div class="info-card">
+                    <h4><i class="bi bi-arrow-up-circle-fill"></i> Melhor Cenário - {{melhor_caso_notacao}}</h4>
                     <p>{{ scenario_data.best_arr }}</p>
                     <p>Tempo: <span class="text-info">{{ scenario_data.best_results.time }}s</span></p>
                     <p>Comparações: {{ scenario_data.best_results.comp }} | Trocas: {{ scenario_data.best_results.swap }}</p>
                 </div>
                 <div class="info-card">
-                    <h4><i class="bi bi-arrow-down-circle-fill"></i> Pior Cenário</h4>
+                    <h4><i class="bi bi-arrow-right-circle-fill"></i> Cenário Médio - {{caso_medio_notacao}}</h4>
+                    <p>{{ scenario_data.average_arr }}</p>
+                    <p>Tempo: <span class="text-info">{{ scenario_data.average_results.time }}s</span></p>
+                    <p>Comparações: {{ scenario_data.average_results.comp }} | Trocas: {{ scenario_data.average_results.swap }}</p>
+                </div>
+                <div class="info-card">
+                    <h4><i class="bi bi-arrow-down-circle-fill"></i> Pior Cenário - {{pior_caso_notacao}}</h4>
                     <p>{{ scenario_data.worst_arr }}</p>
                     <p>Tempo: <span class="text-warning">{{ scenario_data.worst_results.time }}s</span></p>
                     <p>Comparações: {{ scenario_data.worst_results.comp }} | Trocas: {{ scenario_data.worst_results.swap }}</p>
@@ -447,11 +457,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     <h4><i class="bi bi-circle-fill text-info"></i> Bubble Sort</h4>
                     <p>Tempo: <span class="text-info">{{ comparison_data.bubble.time }}s</span></p>
                     <p>Comparações: {{ comparison_data.bubble.comp }} | Trocas: {{ comparison_data.bubble.swap }}</p>
+                    <form method="post">
+                        <input type="text" class="form-control mb-3 d-none" value="{{ player }}" name="player" id="player" placeholder="Seu nome" required>
+                        <input type="hidden" value="{{ numbers }}" name="numbers" id="hiddenNumbers">
+                        <input class="form-check-input d-none" type="radio" id="bubbleSort" name="sorting" value="bubbleSort" checked>
+                        <button type="submit" class="btn btn-info">Ver Bubble Sort</button> 
+                    </form>
                 </div>
                 <div class="info-card">
                     <h4><i class="bi bi-square-fill text-warning"></i> Selection Sort</h4>
                     <p>Tempo: <span class="text-warning">{{ comparison_data.selection.time }}s</span></p>
                     <p>Comparações: {{ comparison_data.selection.comp }} | Trocas: {{ comparison_data.selection.swap }}</p>
+                    <form method="post">
+                        <input type="text" class="form-control mb-3 d-none" value="{{ player }}" name="player" id="player" placeholder="Seu nome" required>
+                        <input type="hidden" value="{{ numbers }}" name="numbers" id="hiddenNumbers">
+                        <input class="form-check-input d-none" type="radio" id="selectionSort" name="sorting" value="selectionSort" checked>
+                        <button type="submit" class="btn btn-warning">Ver Selection Sort</button> 
+                    </form>
+                </div>
+                 <div class="info-card">
+                    <h4><i class="bi bi-square-fill text-danger"></i> Insertion Sort</h4>
+                    <p>Tempo: <span class="text-danger">{{ comparison_data.insertion.time }}s</span></p>
+                    <p>Comparações: {{ comparison_data.insertion.comp }} | Trocas: {{ comparison_data.insertion.swap }}</p>
+                    <form method="post">
+                        <input type="text" class="form-control mb-3 d-none" value="{{ player }}" name="player" id="player" placeholder="Seu nome" required>
+                        <input type="hidden" value="{{ numbers }}" name="numbers" id="hiddenNumbers">
+                        <input class="form-check-input d-none" type="radio" id="insertionSort" name="sorting" value="insertionSort" checked>
+                        <button type="submit" class="btn btn-danger">Ver Insertion Sort</button> 
+                    </form>
                 </div>
             </div>
         </div>
