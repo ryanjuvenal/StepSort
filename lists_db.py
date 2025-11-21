@@ -18,6 +18,8 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS listas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,   -- ID gerado automaticamente
             jogador TEXT NOT NULL,                  -- Nome do jogador
+            algoritmo TEXT NOT NULL,                -- Tipo do algoritmo
+            complexidade TEXT NOT NULL,             -- Complexidade do algoritmo
             numeros TEXT NOT NULL,                  -- Lista de números (string)
             data_registro TEXT NOT NULL             -- Data e hora do registro
         )
@@ -30,7 +32,7 @@ def create_tables():
 # ---------------------------------------------------------
 # Salva uma lista no banco de dados
 # ---------------------------------------------------------
-def salvar_lista(jogador: str, numeros: list):
+def salvar_lista(jogador: str, numeros: list, algoritmo: str, complexidade: str ):
     conn = sqlite3.connect(DB_LISTS)
     cursor = conn.cursor()
 
@@ -42,9 +44,9 @@ def salvar_lista(jogador: str, numeros: list):
 
     # Insere o registro no banco
     cursor.execute("""
-        INSERT INTO listas (jogador, numeros, data_registro)
-        VALUES (?, ?, ?)
-    """, (jogador, numeros_text, data))
+        INSERT INTO listas (jogador, numeros, algoritmo, complexidade, data_registro)
+        VALUES (?, ?, ?, ?, ?)
+    """, (jogador, numeros_text, algoritmo, complexidade, data))
 
     conn.commit()
     conn.close()
@@ -59,7 +61,7 @@ def listar_listas(limit: int = 100):
 
     # Busca os registros mais recentes primeiro
     cursor.execute("""
-        SELECT id, jogador, numeros, data_registro
+        SELECT id, jogador, numeros, algoritmo, complexidade, data_registro
         FROM listas
         ORDER BY id DESC
         LIMIT ?
